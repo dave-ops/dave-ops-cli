@@ -1,10 +1,13 @@
-// code2img.js
-const { program } = require('commander');
-const fs = require('fs').promises;
-const path = require('path');
-const hljs = require('highlight.js');
-const { createCanvas } = require('canvas');
-const clipboardy = require('clipboardy');
+import { program } from 'commander';
+import { promises as fs } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url'; // Add this import
+import hljs from 'highlight.js';
+import { createCanvas } from 'canvas';
+import clipboardy from 'clipboardy';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const CONFIG = {
     padding: 20,
@@ -114,21 +117,14 @@ async function copyImagesToClipboard() {
             return;
         }
 
-        // On Windows, we can only copy one image at a time to clipboard
-        // We'll copy the most recent one and list all paths
-        const mostRecentImage = history[history.length - 1];
-        const imageData = await fs.readFile(mostRecentImage);
-        
-        // clipboardy doesn't support images directly on Windows, 
-        // so we'll copy the file paths as text instead
         const pathsText = history.join('\n');
         await clipboardy.write(pathsText);
-        
+
         console.log('Copied image paths to clipboard:');
         history.forEach((imgPath, index) => {
             console.log(`${index + 1}. ${imgPath}`);
         });
-        console.log(`Note: Most recent image path (${mostRecentImage}) is at the top of clipboard`);
+        console.log(`Note: Most recent image path (${history[history.length - 1]}) is at the top of clipboard`);
     } catch (error) {
         console.error('Error copying to clipboard:', error.message);
         process.exit(1);

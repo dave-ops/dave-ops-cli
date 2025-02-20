@@ -13,7 +13,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/dave-ops/dave-ops-cli/issues"
   },
@@ -25,6 +25,6 @@
     "highlight.js": "^11.11.1"
   },
   "bin": {
-    "code2img": "./code2img.js"
+    "code2img": "./code2img.mjs"
   }
 }
