@@ -1,4 +1,4 @@
-# Dave Ops CLI - `code2img`
+# dave-ops CLI - `code2img`
 
 ## Description
 `dave-ops-cli` is a command-line tool that converts code files (e.g., JavaScript, Python, Java, C, C++) into visually appealing images using syntax highlighting. It also allows you to manage generated images, including copying the actual images to the clipboard for easy sharing or pasting. Built with Node.js, this tool leverages libraries like `highlight.js` for syntax highlighting, `canvas` for image generation, and `clipboardy` for clipboard operations.
