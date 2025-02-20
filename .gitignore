@@ -132,3 +132,5 @@ dist
 # dave-ops-cli
 .output/*.*
 *.png
+image-history.json
+
