@@ -4,6 +4,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const hljs = require('highlight.js');
 const { createCanvas } = require('canvas');
+const clipboardy = require('clipboardy');
 
 const CONFIG = {
     padding: 20,
@@ -11,8 +12,24 @@ const CONFIG = {
     lineHeight: 1.5,
     bgColor: '#1e1e1e',
     fontFamily: 'Consolas, monospace',
-    maxWidth: 800
+    maxWidth: 800,
+    historyFile: path.join(__dirname, 'image-history.json')
 };
+
+// Load or initialize history
+async function loadHistory() {
+    try {
+        const data = await fs.readFile(CONFIG.historyFile, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        return [];
+    }
+}
+
+// Save history
+async function saveHistory(history) {
+    await fs.writeFile(CONFIG.historyFile, JSON.stringify(history, null, 2));
+}
 
 async function convertCodeToImage(inputFile, outputFile) {
     try {
@@ -72,21 +89,69 @@ async function convertCodeToImage(inputFile, outputFile) {
         });
 
         const buffer = canvas.toBuffer('image/png');
-        await fs.writeFile(outputFile, buffer);
-        console.log(`Image saved as ${outputFile}`);
+        const fullOutputPath = path.resolve(outputFile);
+        await fs.writeFile(fullOutputPath, buffer);
+
+        // Update history
+        const history = await loadHistory();
+        if (!history.includes(fullOutputPath)) {
+            history.push(fullOutputPath);
+            await saveHistory(history);
+        }
+
+        console.log(`Image saved as ${fullOutputPath}`);
     } catch (error) {
         console.error('Error:', error.message);
         process.exit(1);
     }
 }
 
+async function copyImagesToClipboard() {
+    try {
+        const history = await loadHistory();
+        if (history.length === 0) {
+            console.log('No images in history');
+            return;
+        }
+
+        // On Windows, we can only copy one image at a time to clipboard
+        // We'll copy the most recent one and list all paths
+        const mostRecentImage = history[history.length - 1];
+        const imageData = await fs.readFile(mostRecentImage);
+        
+        // clipboardy doesn't support images directly on Windows, 
+        // so we'll copy the file paths as text instead
+        const pathsText = history.join('\n');
+        await clipboardy.write(pathsText);
+        
+        console.log('Copied image paths to clipboard:');
+        history.forEach((imgPath, index) => {
+            console.log(`${index + 1}. ${imgPath}`);
+        });
+        console.log(`Note: Most recent image path (${mostRecentImage}) is at the top of clipboard`);
+    } catch (error) {
+        console.error('Error copying to clipboard:', error.message);
+        process.exit(1);
+    }
+}
+
+// CLI setup
 program
     .version('1.0.0')
-    .description('Convert code files to images')
+    .description('Convert code files to images and manage them');
+
+program
+    .command('convert')
+    .description('Convert a code file to an image')
     .arguments('<input> [output]')
     .action(async (input, output) => {
         const outputFile = output || path.basename(input, path.extname(input)) + '.png';
         await convertCodeToImage(input, outputFile);
     });
+
+program
+    .command('copy')
+    .description('Copy all generated image paths to clipboard')
+    .action(copyImagesToClipboard);
 
 program.parse(process.argv);

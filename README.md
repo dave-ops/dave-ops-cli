@@ -1,6 +1,14 @@
 # dave-ops-cli
 
+**link code2img command**
+make code2img available globally
+```
+npm link
+```
+
 ## code to image
 ```
-node code2img-bash.js src\server.js server.png
+code2img convert src\server.js server-image.png
 ```
+
+
