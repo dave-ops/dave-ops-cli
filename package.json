@@ -1,0 +1,26 @@
+{
+  "name": "dave-ops-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dave-ops/dave-ops-cli.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/dave-ops/dave-ops-cli/issues"
+  },
+  "homepage": "https://github.com/dave-ops/dave-ops-cli#readme",
+  "dependencies": {
+    "canvas": "^3.1.0",
+    "commander": "^13.1.0",
+    "highlight.js": "^11.11.1"
+  }
+}
